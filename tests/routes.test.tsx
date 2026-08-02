@@ -11,6 +11,10 @@ vi.mock("@/lib/supabase/server", () => ({
   })),
 }));
 
+vi.mock("@/lib/auth/require-user", () => ({
+  requireUser: vi.fn(async () => ({ id: "user-1" })),
+}));
+
 describe("foundation routes", () => {
   it("renders the login page", async () => {
     render(await LoginPage());
@@ -28,9 +32,9 @@ describe("foundation routes", () => {
     expect(screen.getByText("Research jobs")).toBeInTheDocument();
   });
 
-  it("renders the new prospect placeholder", async () => {
+  it("renders the new prospect page", async () => {
     const { default: NewProspectPage } = await import("@/app/prospects/new/page");
-    render(<NewProspectPage />);
+    render(await NewProspectPage());
 
     expect(screen.getByRole("heading", { name: "Add a prospect" })).toBeInTheDocument();
     expect(screen.getByLabelText("Contact name")).toBeInTheDocument();
