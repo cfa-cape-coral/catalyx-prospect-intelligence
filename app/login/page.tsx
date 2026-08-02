@@ -1,25 +1,24 @@
+import { redirect } from "next/navigation";
+import { LoginForm } from "./login-form";
 import { PageShell } from "@/components/page-shell";
+import { createClient } from "@/lib/supabase/server";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
   return (
     <PageShell
-      eyebrow="Private access"
       title="Sign in"
-      description="Authentication will be connected to Supabase in a later milestone."
+      description="Use your private Catalyx account to access prospect intelligence."
     >
-      <form className="placeholder-card" aria-label="Login placeholder">
-        <div>
-          <label htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" disabled />
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" disabled />
-        </div>
-        <button type="button" disabled>
-          Sign in unavailable
-        </button>
-      </form>
+      <LoginForm />
     </PageShell>
   );
 }

@@ -1,7 +1,13 @@
 import Link from "next/link";
-import { primaryNavigation } from "@/lib/navigation";
+import { logout } from "@/app/auth/actions";
+import { createClient } from "@/lib/supabase/server";
 
-export function AppHeader() {
+export async function AppHeader() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <header className="app-header">
       <div className="app-header__inner">
@@ -10,13 +16,33 @@ export function AppHeader() {
         </Link>
         <nav aria-label="Primary navigation">
           <ul className="app-header__nav-list">
-            {primaryNavigation.map((item) => (
-              <li key={item.href}>
-                <Link className="app-header__nav-link" href={item.href}>
-                  {item.label}
+            {user ? (
+              <>
+                <li>
+                  <Link className="app-header__nav-link" href="/dashboard">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link className="app-header__nav-link" href="/prospects/new">
+                    New Prospect
+                  </Link>
+                </li>
+                <li>
+                  <form action={logout}>
+                    <button className="app-header__nav-link" type="submit">
+                      Sign out
+                    </button>
+                  </form>
+                </li>
+              </>
+            ) : (
+              <li>
+                <Link className="app-header__nav-link" href="/login">
+                  Login
                 </Link>
               </li>
-            ))}
+            )}
           </ul>
         </nav>
       </div>

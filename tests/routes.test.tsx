@@ -1,11 +1,19 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import DashboardPage from "@/app/dashboard/page";
 import LoginPage from "@/app/login/page";
 
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(async () => ({
+    auth: {
+      getUser: vi.fn(async () => ({ data: { user: null } })),
+    },
+  })),
+}));
+
 describe("foundation routes", () => {
-  it("renders the login placeholder", () => {
-    render(<LoginPage />);
+  it("renders the login page", async () => {
+    render(await LoginPage());
     expect(screen.getByRole("heading", { name: "Sign in" })).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
