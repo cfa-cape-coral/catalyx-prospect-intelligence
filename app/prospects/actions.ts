@@ -1,7 +1,11 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import {
+  pipelineStatuses,
+  type PipelineStatus,
+} from "@/lib/prospects/constants";
 import { createProspectSchema } from "@/lib/prospects/schema";
 import { requireUser } from "@/lib/auth/require-user";
 import { createClient } from "@/lib/supabase/server";
@@ -84,4 +88,70 @@ export async function createProspect(
 
   revalidatePath("/dashboard");
   redirect(`/prospects/${prospect.id}`);
+}
+
+export async function updatePipelineStatus(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const prospectId = String(formData.get("prospectId") ?? "").trim();
+  const pipelineStatus = String(formData.get("pipelineStatus") ?? "");
+
+  if (
+    !prospectId ||
+    !pipelineStatuses.includes(pipelineStatus as PipelineStatus)
+  ) {
+    notFound();
+  }
+
+  const nextStatus = pipelineStatus as PipelineStatus;
+  const supabase = await createClient();
+  const { data: prospect, error: loadError } = await supabase
+    .from("prospects")
+    .select("pipeline_status")
+    .eq("id", prospectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (loadError) {
+    throw new Error("Unable to update prospect");
+  }
+
+  if (!prospect) {
+    notFound();
+  }
+
+  const previousStatus = prospect.pipeline_status as PipelineStatus;
+
+  if (previousStatus === nextStatus) {
+    return;
+  }
+
+  const { error: updateError } = await supabase
+    .from("prospects")
+    .update({ pipeline_status: nextStatus })
+    .eq("id", prospectId)
+    .eq("user_id", user.id);
+
+  if (updateError) {
+    throw new Error("Unable to update prospect");
+  }
+
+  const { error: timelineError } = await supabase
+    .from("timeline_events")
+    .insert({
+      prospect_id: prospectId,
+      user_id: user.id,
+      event_type: "pipeline_status_changed",
+      title: "Pipeline status changed",
+      details: {
+        from: previousStatus,
+        to: nextStatus,
+      },
+    });
+
+  if (timelineError) {
+    throw new Error("Unable to update prospect");
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/prospects/${prospectId}`);
 }
