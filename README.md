@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Catalyx Prospect Intelligence
 
-## Getting Started
+A private prospect research and consulting-intelligence platform for Catalyx Systems.
 
-First, run the development server:
+## Current milestone
+
+This repository currently contains the application foundation only:
+
+- Responsive Next.js shell
+- Placeholder login page
+- Placeholder dashboard page
+- Placeholder new-prospect page
+- Placeholder prospect-profile route
+- Shared navigation and layout components
+- Automated foundation tests
+
+It does **not** yet contain authentication, Supabase, AI research, OCR, public web search, or background jobs.
+
+## Requirements
+
+Install Node.js and npm before continuing.
+
+## Run locally
+
+1. Clone the private repository.
+2. Open a terminal in the repository folder.
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open `http://localhost:3000` in a browser.
+
+The root URL redirects to `/dashboard`.
+
+## Available routes
+
+- `/login`
+- `/dashboard`
+- `/prospects/new`
+- `/prospects/example-prospect`
+
+## Quality checks
+
+Run all checks before committing:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm test
+npm run lint
+npm run typecheck
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+All four commands must pass.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Security
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Do not commit API keys or passwords.
+- Do not commit `.env.local`.
+- All future service credentials must use environment variables.
