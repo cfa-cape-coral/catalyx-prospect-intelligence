@@ -19,4 +19,20 @@ describe("foundation routes", () => {
     expect(screen.getByText("Total prospects")).toBeInTheDocument();
     expect(screen.getByText("Research jobs")).toBeInTheDocument();
   });
+
+  it("renders the new prospect placeholder", async () => {
+    const { default: NewProspectPage } = await import("@/app/prospects/new/page");
+    render(<NewProspectPage />);
+
+    expect(screen.getByRole("heading", { name: "Add a prospect" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Contact name")).toBeInTheDocument();
+    expect(screen.getByLabelText("Company")).toBeInTheDocument();
+    expect(screen.getByLabelText("Role")).toBeInTheDocument();
+    expect(screen.getByLabelText("Phone")).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Website")).toBeInTheDocument();
+    expect(screen.getByLabelText("LinkedIn")).toBeInTheDocument();
+    expect(screen.getByLabelText("Notes")).toBeInTheDocument();
+    expect(screen.getByLabelText("Relationship type")).toBeInTheDocument();
+  });
 });
