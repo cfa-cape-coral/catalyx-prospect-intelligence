@@ -15,6 +15,11 @@ vi.mock("@/lib/auth/require-user", () => ({
   requireUser: vi.fn(async () => ({ id: "user-1" })),
 }));
 
+vi.mock("@/lib/prospects/queries", () => ({
+  getAllProspectStatuses: vi.fn(async () => []),
+  getRecentProspects: vi.fn(async () => []),
+}));
+
 describe("foundation routes", () => {
   it("renders the login page", async () => {
     render(await LoginPage());
@@ -23,13 +28,13 @@ describe("foundation routes", () => {
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
   });
 
-  it("renders the dashboard placeholder", () => {
-    render(<DashboardPage />);
+  it("renders the empty dashboard", async () => {
+    render(await DashboardPage());
     expect(
       screen.getByRole("heading", { name: "Prospect intelligence dashboard" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Total prospects")).toBeInTheDocument();
-    expect(screen.getByText("Research jobs")).toBeInTheDocument();
+    expect(screen.getByText("No prospects yet.")).toBeInTheDocument();
   });
 
   it("renders the new prospect page", async () => {
